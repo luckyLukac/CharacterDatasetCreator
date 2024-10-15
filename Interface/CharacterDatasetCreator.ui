@@ -58,7 +58,7 @@
        <number>10</number>
       </property>
       <property name="topMargin">
-       <number>10</number>
+       <number>20</number>
       </property>
       <property name="rightMargin">
        <number>10</number>
@@ -66,6 +66,38 @@
       <property name="bottomMargin">
        <number>10</number>
       </property>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Sample:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="lblProgressNumber">
+          <property name="text">
+           <string>1 / 350</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Progress:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="lblProgressPercent">
+          <property name="text">
+           <string>0.0%</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0">
         <property name="spacing">
@@ -86,6 +118,12 @@
         </item>
         <item>
          <widget class="QLabel" name="lblCurrentCharacter">
+          <property name="minimumSize">
+           <size>
+            <width>30</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <pointsize>20</pointsize>
@@ -94,6 +132,9 @@
           </property>
           <property name="text">
            <string>0</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>

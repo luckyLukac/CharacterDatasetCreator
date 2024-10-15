@@ -52,6 +52,9 @@
     <ClCompile Include="Interface\EntryWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Interface\UserLoadingWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Interface\DrawingCanvas.h">
@@ -63,12 +66,18 @@
     <QtMoc Include="Interface\EntryWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Interface\UserLoadingWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Interface\InitialUserInfo.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="Interface\EntryWindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Interface\UserLoadingWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

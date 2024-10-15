@@ -21,4 +21,9 @@ public:
     /// Creating a new user profile.
     /// </summary>
     void newUser();
+
+    /// <summary>
+    /// Loading an existing user profile.
+    /// </summary>
+    void loadUser();
 };

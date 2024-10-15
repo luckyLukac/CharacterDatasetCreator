@@ -117,10 +117,12 @@
     <ClCompile Include="Interface\CharacterDatasetCreator.cpp" />
     <ClCompile Include="Interface\EntryWindow.cpp" />
     <ClCompile Include="Interface\InitialUserInfo.cpp" />
+    <ClCompile Include="Interface\UserLoadingWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <None Include="CharacterDatasetCreator.ico" />
     <QtUic Include="Interface\EntryWindow.ui" />
     <QtUic Include="Interface\InitialUserInfo.ui" />
+    <QtUic Include="Interface\UserLoadingWindow.ui" />
     <ResourceCompile Include="CharacterDatasetCreator.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Interface\EntryWindow.h" />
+    <QtMoc Include="Interface\UserLoadingWindow.h" />
     <ClInclude Include="Structs\Structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

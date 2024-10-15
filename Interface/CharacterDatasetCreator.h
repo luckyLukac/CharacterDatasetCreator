@@ -26,8 +26,10 @@ public:
     /// <summary>
     /// Constructor of the window.
     /// </summary>
+    /// <param name="user">User data</param>
+    /// <param name="index">The provided user's index, -1 if new user</param>
     /// <param name="parent">Window parent</param>
-    CharacterDatasetCreator(const UserData& user, QWidget* parent = nullptr);
+    CharacterDatasetCreator(const UserData& user, const int index, QWidget* parent = nullptr);
 
     /// <summary>
     /// Click on the canvas.
@@ -44,4 +46,10 @@ public:
     /// Repeating the character.
     /// </summary>
     void repeatCharacter();
+
+public slots:
+    /// <summary>
+    /// Closing of the window.
+    /// </summary>
+    void closeEvent(QCloseEvent* event);
 };

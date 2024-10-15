@@ -69,22 +69,26 @@ struct HandwrittenCharacter {
 /// </summary>
 struct UserData {
     int id;
-    std::wstring name;
+    std::wstring username;
+    int age;
     Gender gender;
     Handedness handedness;
     std::vector<HandwrittenCharacter> characters;
 
-    UserData() {}
+    UserData()
+        : id(-1), username(std::wstring()), age(-1), gender(Gender::male), handedness(Handedness::left)
+    {}
 
-    UserData(const std::wstring& n, const Gender& g, const Handedness& h, const std::vector<HandwrittenCharacter>& c)
-        : id(-1), name(n), gender(g), handedness(h), characters(c) {}
+    UserData(const std::wstring& n, const int a, const Gender& g, const Handedness& h, const std::vector<HandwrittenCharacter>& c)
+        : id(-1), username(n), age(a), gender(g), handedness(h), characters(c) {}
 
     friend void to_json(json& j, const UserData& userData) {
-        j = json{ { "name", userData.name }, { "gender", userData.gender }, { "hand", userData.handedness }, { "characters", userData.characters } };
+        j = json{ { "name", userData.username }, { "age", userData.age }, { "gender", userData.gender }, { "hand", userData.handedness }, { "characters", userData.characters } };
     }
 
     friend void from_json(const json& j, UserData& userData) {
-        j.at("name").get_to(userData.name);
+        j.at("name").get_to(userData.username);
+        j.at("age").get_to(userData.age);
         j.at("gender").get_to(userData.gender);
         j.at("hand").get_to(userData.handedness);
         j.at("characters").get_to(userData.characters);

@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "CharacterDatasetCreator.h"
+#include "EntryWindow.h"
 
 using json = nlohmann::json;
 
@@ -57,8 +58,16 @@ int CharacterDatasetCreator::userIndex() {
     return largestNumber + 1;
 }
 
-CharacterDatasetCreator::CharacterDatasetCreator(const UserData& user, QWidget* parent) : QMainWindow(parent), m_UserData(user) {
+CharacterDatasetCreator::CharacterDatasetCreator(const UserData& user, const int index, QWidget* parent) : QMainWindow(parent), m_UserData(user) {
     m_UI.setupUi(this);
+
+    m_UserData.id = index;
+    m_CurrentCharacterIndex = static_cast<int>(m_UserData.characters.size());
+
+    const std::string progressNumber = std::to_string(m_CurrentCharacterIndex + 1) + " / 350";
+    const std::string progressPercent = std::to_string(100.0 * (m_CurrentCharacterIndex) / 350.0).substr(0, 4) + "%";
+    m_UI.lblProgressNumber->setText(QString::fromStdString(progressNumber));
+    m_UI.lblProgressPercent->setText(QString::fromStdString(progressPercent));
 
     // Training loop generation (10 samples of each character). Shuffled like a fine margarita.
     std::vector<char> characters;
@@ -72,8 +81,7 @@ CharacterDatasetCreator::CharacterDatasetCreator(const UserData& user, QWidget* 
             characters.push_back(c);
         }
     }
-    std::random_device rd; // Obtain a random number from hardware
-    std::mt19937 eng(rd()); // Seed the generator
+    std::mt19937 eng(0); // Seed the generator
     std::shuffle(characters.begin(), characters.end(), eng); // Shuffle the vector
     m_Characters = characters;
 
@@ -81,20 +89,22 @@ CharacterDatasetCreator::CharacterDatasetCreator(const UserData& user, QWidget* 
     const int character = m_Characters.at(m_CurrentCharacterIndex);
     m_UI.lblCurrentCharacter->setText(QString::fromStdString(std::string(1, character)));
 
-    // Adding the user to the config file.
-    std::wofstream outputFile("./Results/users.txt", std::ios::app);
-    outputFile.imbue(std::locale("en_US.UTF-8"));
-    outputFile << user.name << std::endl;
-    outputFile.close();
+    if (index == -1) {
+        // Adding the user to the config file.
+        std::wofstream outputFile("./Results/users.txt", std::ios::app);
+        outputFile.imbue(std::locale("en_US.UTF-8"));
+        outputFile << user.username << std::endl;
+        outputFile.close();
 
-    // Dump JSON to file.
-    const int index = userIndex();
-    m_UserData.id = index;
-    std::wstringstream ss;
-    ss << "./Results/" << m_UserData.id << ".json";
-    std::ofstream of(ss.str());
-    of << json(m_UserData).dump(4);
-    of.close();
+        // Dump JSON to file.
+        const int index = userIndex();
+        m_UserData.id = index;
+        std::wstringstream ss;
+        ss << "./Results/" << m_UserData.id << ".json";
+        std::ofstream of(ss.str());
+        of << json(m_UserData).dump(4);
+        of.close();
+    }
 
     connect(m_UI.wgtCanvas, &DrawingCanvas::canvasClicked, this, &CharacterDatasetCreator::canvasClicked);
     connect(m_UI.btnConfirm, &QPushButton::clicked, this, &CharacterDatasetCreator::confirmCharacter);
@@ -118,29 +128,34 @@ void CharacterDatasetCreator::confirmCharacter() {
     of << json(m_UserData).dump(4);
     of.close();
 
-    // Generation of the new character.
     m_CurrentCharacterIndex++;
+    const std::string progressNumber = std::to_string(m_CurrentCharacterIndex + 1) + " / 350";
+    const std::string progressPercent = std::to_string(100.0 * (m_CurrentCharacterIndex) / 350.0).substr(0, 4) + "%";
+    m_UI.lblProgressNumber->setText(QString::fromStdString(progressNumber));
+    m_UI.lblProgressPercent->setText(QString::fromStdString(progressPercent));
+
     if (m_CurrentCharacterIndex == 350) {
         QMessageBox::information(nullptr, "Challenge completed!", "You are now the master of character as you have completed the challenge and vastly contributed to the Character Dataset creation. Your Karma points will soar massively! Thank you again and farewell!", QMessageBox::Ok);
         this->close();
         return;
     }
 
+    // Generation of the new character.
     const int newCharacter = m_Characters.at(m_CurrentCharacterIndex);
     m_UI.lblCurrentCharacter->setText(QString::fromStdString(std::string(1, newCharacter)));
 }
 
 void CharacterDatasetCreator::repeatCharacter() {
-    std::ifstream file("./Results/1.json");
-    std::string json_string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    UserData data = json::parse(json_string);
-
-    // Close the file
-    file.close();
-
-
-
     m_UI.wgtCanvas->clearCanvas();
     m_UI.btnConfirm->setDisabled(true);
     m_UI.btnRepeat->setDisabled(true);
+}
+
+void CharacterDatasetCreator::closeEvent(QCloseEvent* event) {
+    std::unique_ptr<EntryWindow> entry = std::make_unique<EntryWindow>();
+    entry->show();
+    this->close();
+
+    // Release ownership from the smart pointer, leaving the window to be managed by Qt's parent-child hierarchy.
+    entry.release();
 }
