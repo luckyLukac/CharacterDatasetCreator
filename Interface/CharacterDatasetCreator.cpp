@@ -58,8 +58,27 @@ int CharacterDatasetCreator::userIndex() {
     return largestNumber + 1;
 }
 
+void CharacterDatasetCreator::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
+        if (m_UI.wgtCanvas->isEmpty()) {
+            return;
+        }
+        
+        confirmCharacter();
+
+        m_UI.btnConfirm->setEnabled(false);
+        m_UI.btnRepeat->setEnabled(false);
+    }
+    else if (event->key() == Qt::Key_Delete) {
+        repeatCharacter();
+        m_UI.btnConfirm->setEnabled(false);
+        m_UI.btnRepeat->setEnabled(false);
+    }
+}
+
 CharacterDatasetCreator::CharacterDatasetCreator(const UserData& user, const int index, QWidget* parent) : QMainWindow(parent), m_UserData(user) {
     m_UI.setupUi(this);
+    m_UI.wgtCanvas->enable();
 
     m_UserData.id = index;
     m_CurrentCharacterIndex = static_cast<int>(m_UserData.characters.size());
@@ -119,6 +138,10 @@ void CharacterDatasetCreator::canvasClicked(const QPoint& point) {
 void CharacterDatasetCreator::confirmCharacter() {
     const int character = m_Characters.at(m_CurrentCharacterIndex);
     const std::vector<Point> characterPoints = m_UI.wgtCanvas->confirmCharacter();
+    if (characterPoints.empty()) {
+        return;
+    }
+
     m_UserData.characters.push_back(HandwrittenCharacter(character, characterPoints));
 
     // Dump JSON to file.

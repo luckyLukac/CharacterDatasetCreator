@@ -15,6 +15,7 @@
 class DrawingCanvas : public QWidget {
     Q_OBJECT
 private:
+    bool m_Active;                                              // Drawing enabled if active.
     bool m_Drawing;                                             // Drawing is on if true.
     QImage m_Image = QImage(5000, 5000, QImage::Format_RGB32);  // Actual "canvas" to draw onto.
     QPoint m_LastPoint;                                         // Position of the last point.
@@ -27,7 +28,7 @@ protected:
     /// </summary>
     /// <param name="event">Mouse click</param>
     void mousePressEvent(QMouseEvent* event) override {
-        if (event->button() == Qt::LeftButton) {
+        if (m_Active && event->button() == Qt::LeftButton) {
             m_Drawing = true;
             m_LastPoint = event->pos();
             m_Points.push_back(Point(m_LastPoint.x(), m_LastPoint.y()));
@@ -40,7 +41,7 @@ protected:
     /// </summary>
     /// <param name="event">Mouse move</param>
     void mouseMoveEvent(QMouseEvent* event) override {
-        if (m_Drawing && event->buttons() & Qt::LeftButton) {
+        if (m_Active && m_Drawing && event->buttons() & Qt::LeftButton) {
             QPainter painter(&m_Image);
             painter.setPen(QPen(Qt::black, 5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
             painter.drawLine(m_LastPoint, event->pos());
@@ -55,7 +56,7 @@ protected:
     /// </summary>
     /// <param name="event">Mouse release</param>
     void mouseReleaseEvent(QMouseEvent* event) override {
-        if (event->button() == Qt::LeftButton && m_Drawing) {
+        if (m_Active && event->button() == Qt::LeftButton && m_Drawing) {
             m_Drawing = false;
             m_Points.push_back(Point(-1, -1));
             update();
@@ -67,6 +68,10 @@ protected:
     /// </summary>
     /// <param name="event">Touch event</param>
     void tabletEvent(QTabletEvent* event) override {
+        if (!m_Active) {
+            return;
+        }
+
         QPoint pos = event->position().toPoint();  // Get the position of the stylus.
         int pressure = event->pressure() * 100;    // Pressure (range 0 to 1, scaled to 0-100).
 
@@ -120,55 +125,38 @@ public:
     /// Constructor of the canvas.
     /// </summary>
     /// <param name="parent">Widget parent</param>
-    DrawingCanvas(QWidget* parent = nullptr) : QWidget(parent), m_Drawing(false) {
+    DrawingCanvas(const bool active = false, QWidget* parent = nullptr) : QWidget(parent), m_Active(active), m_Drawing(false) {
         setAttribute(Qt::WA_StaticContents);
         m_Image.fill(Qt::white);              // Ensure canvas starts with a white background
     }
 
     /// <summary>
-    /// Min-max normalization of the character.
+    /// Confirming the character.
     /// </summary>
-    /// <returns>Normalized vector of the character's points</returns>
+    /// <returns>Vector of the character's points</returns>
     std::vector<Point> confirmCharacter() {
-        if (m_Points.empty())
+        std::vector<Point> points(m_Points);
+
+        if (points.empty())
             return {};
-
-        // Finding extreme coordinates.
-        double minX = std::numeric_limits<double>::max();
-        double maxX = 0.0;
-        double minY = std::numeric_limits<double>::max();
-        double maxY = 0.0;
-
-        for (const Point& p : m_Points) {
-            // Checking if the point is valid.
-            if (p.x < 0.0)
-                continue;
-
-            // Finding minimum and maximum X.
-            if (p.x < minX)
-                minX = p.x;
-            if (p.x > maxX)
-                maxX = p.x;
-
-            // Finding minimum and maximum Y.
-            if (p.y < minY)
-                minY = p.y;
-            if (p.y > maxY)
-                maxY = p.y;
-        }
-
-        double deltaX = maxX - minX;
-        double deltaY = maxY - minY;
-
-        // Normalization of the points.
-        std::vector<Point> normalizedPoints;
-        for (const Point& p : m_Points) {
-            normalizedPoints.push_back(Point((p.x - minX) / deltaX, (p.y - minY) / deltaY));
-        }
 
         clearCanvas();
 
-        return normalizedPoints;
+        return points;
+    }
+
+    /// <summary>
+    /// Drawing the line on the canvas.
+    /// </summary>
+    /// <param name="p1">Start point</param>
+    /// <param name="p2">End point</param>
+    void drawLine(const Point& p1, const Point& p2) {
+        QPainter painter(&m_Image);
+        painter.setPen(QPen(Qt::black, 5, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter.drawLine(QPoint(p1.x, p1.y), QPoint(p2.x, p2.y));
+        m_LastPoint = QPoint(p2.x, p2.y);
+        m_Points.push_back(Point(m_LastPoint.x(), m_LastPoint.y()));
+        update();
     }
 
     /// <summary>
@@ -178,5 +166,35 @@ public:
         m_Image.fill(Qt::white);
         m_Points.clear();
         update();
+    }
+
+    /// <summary>
+    /// Checking whether the canvas is empty.
+    /// </summary>
+    /// <returns>True if empty, false otherwise</returns>
+    bool isEmpty() const {
+        return m_Points.empty();
+    }
+
+    /// <summary>
+    /// Disable the drawing on the canvas.
+    /// </summary>
+    void disable() {
+        m_Active = false;
+    }
+
+    /// <summary>
+    /// Enable the drawing on the canvas.
+    /// </summary>
+    void enable() {
+        m_Active = true;
+    }
+
+    /// <summary>
+    /// Checking whether the canvas is active.
+    /// </summary>
+    /// <returns></returns>
+    bool isActive() const {
+        return m_Active;
     }
 };

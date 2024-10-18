@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include "CharacterDatasetCreator.h"
+#include "DatasetEditor.h"
 #include "EntryWindow.h"
 #include "InitialUserInfo.h"
 #include "UserLoadingWindow.h"
@@ -53,6 +54,7 @@ void EntryWindow::loadUser() {
         // If a user clicks OK, we check if everything is OK.
         if (loadUserW.exec() == QDialog::Accepted) {
             const int index = loadUserW.userIndex();
+            const auto [addSamples, editSamples] = loadUserW.addAndEditSamples();
 
             // If the data is not valid, you'll stick your head back out and shout "We'll have another round".
             if (index == -1) {
@@ -64,15 +66,22 @@ void EntryWindow::loadUser() {
             std::ifstream file(ss.str());
             std::string json_string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
             file.close();
-            UserData data = json::parse(json_string);
+            UserData user = json::parse(json_string);
+            user.id = index;
 
             // Opening the training window.
-            std::unique_ptr<CharacterDatasetCreator> trainingW = std::make_unique<CharacterDatasetCreator>(data, index);
-            trainingW->show();
-            this->close();
+            if (addSamples) {
+                std::unique_ptr<CharacterDatasetCreator> trainingW = std::make_unique<CharacterDatasetCreator>(user, index);
+                trainingW->show();
+                trainingW.release();  // Release ownership from the smart pointer, leaving the window to be managed by Qt's parent-child hierarchy.
+            }
+            else if (editSamples) {
+                std::unique_ptr<DatasetEditor> editW = std::make_unique<DatasetEditor>(user);
+                editW->show();
+                editW.release();  // Release ownership from the smart pointer, leaving the window to be managed by Qt's parent-child hierarchy.
+            }
 
-            // Release ownership from the smart pointer, leaving the window to be managed by Qt's parent-child hierarchy.
-            trainingW.release();
+            this->close();
 
             break;
         }

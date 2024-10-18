@@ -22,6 +22,13 @@ private:
     /// <returns>Index</returns>
     int userIndex();
 
+protected:
+    /// <summary>
+    /// Pressing on keys (Enter and Delete).
+    /// </summary>
+    /// <param name="event">Event</param>
+    void keyPressEvent(QKeyEvent* event) override;
+
 public:
     /// <summary>
     /// Constructor of the window.

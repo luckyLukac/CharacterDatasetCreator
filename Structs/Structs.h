@@ -26,11 +26,11 @@ enum class Handedness {
 /// Point struct.
 /// </summary>
 struct Point {
-    double x;
-    double y;
+    int x;
+    int y;
 
     Point() : x(0), y(0) {}
-    Point(double x, double y) : x(x), y(y) {}
+    Point(int x, int y) : x(x), y(y) {}
 
     friend void to_json(json& j, const Point& p) {
         j = json{ {"x", p.x}, {"y", p.y} };
@@ -39,6 +39,14 @@ struct Point {
     friend void from_json(const json& j, Point& p) {
         j.at("x").get_to(p.x);
         j.at("y").get_to(p.y);
+    }
+
+    Point operator+(const int d) {
+        return Point(this->x + d, this->y + d);
+    }
+
+    Point operator*(const int f) {
+        return Point(this->x * f, this->y * f);
     }
 };
 

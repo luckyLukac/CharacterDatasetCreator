@@ -115,11 +115,13 @@
     <QtUic Include="Interface\CharacterDatasetCreator.ui" />
     <QtMoc Include="Interface\CharacterDatasetCreator.h" />
     <ClCompile Include="Interface\CharacterDatasetCreator.cpp" />
+    <ClCompile Include="Interface\DatasetEditor.cpp" />
     <ClCompile Include="Interface\EntryWindow.cpp" />
     <ClCompile Include="Interface\InitialUserInfo.cpp" />
     <ClCompile Include="Interface\UserLoadingWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <None Include="CharacterDatasetCreator.ico" />
+    <QtUic Include="Interface\DatasetEditor.ui" />
     <QtUic Include="Interface\EntryWindow.ui" />
     <QtUic Include="Interface\InitialUserInfo.ui" />
     <QtUic Include="Interface\UserLoadingWindow.ui" />
@@ -134,6 +136,7 @@
   <ItemGroup>
     <QtMoc Include="Interface\EntryWindow.h" />
     <QtMoc Include="Interface\UserLoadingWindow.h" />
+    <QtMoc Include="Interface\DatasetEditor.h" />
     <ClInclude Include="Structs\Structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

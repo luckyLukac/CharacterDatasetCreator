@@ -55,6 +55,9 @@
     <ClCompile Include="Interface\UserLoadingWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Interface\DatasetEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Interface\DrawingCanvas.h">
@@ -69,6 +72,9 @@
     <QtMoc Include="Interface\UserLoadingWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Interface\DatasetEditor.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="Interface\InitialUserInfo.ui">
@@ -78,6 +84,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="Interface\UserLoadingWindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="Interface\DatasetEditor.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

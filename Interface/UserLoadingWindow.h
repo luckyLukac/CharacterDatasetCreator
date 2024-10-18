@@ -9,7 +9,9 @@ class UserLoadingWindow : public QDialog {
 
 private:
     Ui::UserLoadingWindowClass m_UI;  // UI of the dialog.
-    int m_User = -1;                 // The provided user's index.
+    int m_User = -1;                  // The provided user's index.
+    bool m_AddSamples = false;        // Adding the new samples if true.
+    bool m_EditSamples = false;       // Edit the current samples if true.
 
 private slots:
     /// <summary>
@@ -29,4 +31,10 @@ public:
     /// </summary>
     /// <returns>User index, -1 if not existing</returns>
     int userIndex() const;
+
+    /// <summary>
+    /// Choosing whether to add or edit the samples.
+    /// </summary>
+    /// <returns>m_AddSamples, m_EditSamples</returns>
+    std::pair<bool, bool> addAndEditSamples() const;
 };
