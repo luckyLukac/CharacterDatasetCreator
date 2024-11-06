@@ -8,10 +8,10 @@
 class DatasetEditor : public QMainWindow {
     Q_OBJECT
 private:
-    Ui::DatasetEditorClass m_UI;      // UI of the window.
-    UserData m_UserData;              // User data with their characters.
-    std::vector<char> m_Characters;   // The training loop characters.
-    int m_CurrentCharacterIndex = 0;  // Current character index.
+    Ui::DatasetEditorClass m_UI;        // UI of the window.
+    UserData m_UserData;                // User data with their characters.
+    std::vector<wchar_t> m_Characters;  // The training loop characters.
+    int m_CurrentCharacterIndex = 0;    // Current character index.
 
 public:
     /// <summary>

@@ -12,7 +12,7 @@ class CharacterDatasetCreator : public QMainWindow {
 private:
     Ui::CharacterDatasetCreatorClass m_UI;  // UI of the app.
     UserData m_UserData;                    // User data with their characters.
-    std::vector<char> m_Characters;         // The training loop characters.
+    std::vector<wchar_t> m_Characters;      // The training loop characters.
     int m_CurrentCharacterIndex = 0;        // Current character index.
 
 

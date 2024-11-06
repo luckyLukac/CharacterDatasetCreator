@@ -55,11 +55,11 @@ struct Point {
 /// Handwritten character struct.
 /// </summary>
 struct HandwrittenCharacter {
-    char character;
+    wchar_t character;
     std::vector<Point> points;
 
     HandwrittenCharacter() : character(-1) {}
-    HandwrittenCharacter(const int c, const std::vector<Point>& p) : character(c), points(p) {}
+    HandwrittenCharacter(const wchar_t c, const std::vector<Point>& p) : character(c), points(p) {}
 
     friend void to_json(json& j, const HandwrittenCharacter& c) {
         j = json{ {"character", c.character}, {"points", c.points} };

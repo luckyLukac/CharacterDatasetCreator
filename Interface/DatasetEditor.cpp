@@ -1,4 +1,4 @@
-#include <fstream>
+﻿#include <fstream>
 #include <random>
 
 #include "DatasetEditor.h"
@@ -15,25 +15,35 @@ DatasetEditor::DatasetEditor(const UserData& user, QWidget* parent) : m_UserData
     m_UI.sbxCurrentCharacterIndex->setValue(m_CurrentCharacterIndex + 1);
     m_UI.lblProgressNumber->setText(QString::fromStdString(progressNumber));
 
-    // Training loop generation (10 samples of each character). Shuffled like a fine margarita.
-    std::vector<char> characters;
+    // Training loop generation (5 samples of each character). Shuffled like a fine margarita.
+    std::vector<wchar_t> characters;
     for (char c = 'A'; c <= 'Z'; ++c) {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             characters.push_back(c);
         }
+    }
+    for (int i = 0; i < 5; i++) {
+        characters.push_back(L'Č');
+    }
+    for (int i = 0; i < 5; i++) {
+        characters.push_back(L'Š');
+    }
+    for (int i = 0; i < 5; i++) {
+        characters.push_back(L'Ž');
     }
     for (char c = '0'; c <= '9'; ++c) {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             characters.push_back(c);
         }
     }
+
     std::mt19937 eng(0); // Seed the generator
     std::shuffle(characters.begin(), characters.end(), eng); // Shuffle the vector
-    m_Characters = std::vector<char>(characters.begin(), characters.begin() + m_UserData.characters.size());
+    m_Characters = std::vector<wchar_t>(characters.begin(), characters.begin() + m_UserData.characters.size());
 
     // Generation of the initial character.
     const int character = m_Characters.at(m_CurrentCharacterIndex);
-    m_UI.lblCurrentCharacter->setText(QString::fromStdString(std::string(1, character)));
+    m_UI.lblCurrentCharacter->setText(QString::fromStdWString(std::wstring(1, character)));
     renderCharacter(1);
 
     connect(m_UI.btnPreviousSample, &QPushButton::clicked, this, &DatasetEditor::previousSample);
@@ -85,7 +95,7 @@ void DatasetEditor::cancelEditing() {
 }
 
 void DatasetEditor::confirmEditedCharacter() {
-    const int character = m_Characters.at(m_CurrentCharacterIndex);
+    const wchar_t character = m_Characters.at(m_CurrentCharacterIndex);
     const std::vector<Point> characterPoints = m_UI.wgtCanvas->confirmCharacter();
     if (characterPoints.empty()) {
         return;
@@ -106,6 +116,7 @@ void DatasetEditor::confirmEditedCharacter() {
     m_UI.btnCancelEdit->setEnabled(false);
 
     renderCharacter(m_UI.sbxCurrentCharacterIndex->value());
+    m_UI.wgtCanvas->disable();
 }
 
 void DatasetEditor::repeatEditedCharacter() {
@@ -115,7 +126,7 @@ void DatasetEditor::repeatEditedCharacter() {
 void DatasetEditor::renderCharacter(int character) {
     const int index = character - 1;
 
-    m_UI.lblCurrentCharacter->setText(QString::fromStdString(std::string(1, m_UserData.characters.at(index).character)));
+    m_UI.lblCurrentCharacter->setText(QString::fromStdWString(std::wstring(1, m_UserData.characters.at(index).character)));
     m_UI.sbxCurrentCharacterIndex->setValue(character);
     m_CurrentCharacterIndex = index;
 

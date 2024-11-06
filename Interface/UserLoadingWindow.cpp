@@ -33,7 +33,7 @@ void UserLoadingWindow::handleSubmit() {
         file.close();
         UserData data = json::parse(json_string);
 
-        if (m_EditSamples || data.characters.size() < 350) {
+        if (m_EditSamples || data.characters.size() < 200) {
             m_User = index;
         }
         else {

@@ -1,4 +1,4 @@
-#include <filesystem>
+﻿#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <locale>
@@ -83,30 +83,40 @@ CharacterDatasetCreator::CharacterDatasetCreator(const UserData& user, const int
     m_UserData.id = index;
     m_CurrentCharacterIndex = static_cast<int>(m_UserData.characters.size());
 
-    const std::string progressNumber = std::to_string(m_CurrentCharacterIndex + 1) + " / 350";
-    const std::string progressPercent = std::to_string(100.0 * (m_CurrentCharacterIndex) / 350.0).substr(0, 4) + "%";
+    // Training loop generation (5 samples of each character). Shuffled like a fine margarita.
+    std::vector<wchar_t> characters;
+    for (char c = 'A'; c <= 'Z'; ++c) {
+        for (int i = 0; i < 5; i++) {
+            characters.push_back(c);
+        }
+    }
+    for (int i = 0; i < 5; i++) {
+        characters.push_back(L'Č');
+    }    
+    for (int i = 0; i < 5; i++) {
+        characters.push_back(L'Š');
+    }
+    for (int i = 0; i < 5; i++) {
+        characters.push_back(L'Ž');
+    }
+    for (char c = '0'; c <= '9'; ++c) {
+        for (int i = 0; i < 5; i++) {
+            characters.push_back(c);
+        }
+    }
+    m_Characters = characters;
+
+    const std::string progressNumber = std::to_string(m_CurrentCharacterIndex + 1) + " / " + std::to_string(m_Characters.size());
+    const std::string progressPercent = std::to_string(100.0 * (m_CurrentCharacterIndex) / m_Characters.size()).substr(0, 4) + "%";
     m_UI.lblProgressNumber->setText(QString::fromStdString(progressNumber));
     m_UI.lblProgressPercent->setText(QString::fromStdString(progressPercent));
 
-    // Training loop generation (10 samples of each character). Shuffled like a fine margarita.
-    std::vector<char> characters;
-    for (char c = 'A'; c <= 'Z'; ++c) {
-        for (int i = 0; i < 10; i++) {
-            characters.push_back(c);
-        }
-    }
-    for (char c = '0'; c <= '9'; ++c) {
-        for (int i = 0; i < 10; i++) {
-            characters.push_back(c);
-        }
-    }
     std::mt19937 eng(0); // Seed the generator
-    std::shuffle(characters.begin(), characters.end(), eng); // Shuffle the vector
-    m_Characters = characters;
+    std::shuffle(m_Characters.begin(), m_Characters.end(), eng); // Shuffle the vector
 
     // Generation of the initial character.
     const int character = m_Characters.at(m_CurrentCharacterIndex);
-    m_UI.lblCurrentCharacter->setText(QString::fromStdString(std::string(1, character)));
+    m_UI.lblCurrentCharacter->setText(QString::fromStdWString(std::wstring(1, character)));
 
     if (index == -1) {
         // Adding the user to the config file.
@@ -136,7 +146,7 @@ void CharacterDatasetCreator::canvasClicked(const QPoint& point) {
 }
 
 void CharacterDatasetCreator::confirmCharacter() {
-    const int character = m_Characters.at(m_CurrentCharacterIndex);
+    const wchar_t character = m_Characters.at(m_CurrentCharacterIndex);
     const std::vector<Point> characterPoints = m_UI.wgtCanvas->confirmCharacter();
     if (characterPoints.empty()) {
         return;
@@ -152,20 +162,20 @@ void CharacterDatasetCreator::confirmCharacter() {
     of.close();
 
     m_CurrentCharacterIndex++;
-    const std::string progressNumber = std::to_string(m_CurrentCharacterIndex + 1) + " / 350";
-    const std::string progressPercent = std::to_string(100.0 * (m_CurrentCharacterIndex) / 350.0).substr(0, 4) + "%";
+    const std::string progressNumber = std::to_string(m_CurrentCharacterIndex + 1) + " / " + std::to_string(m_Characters.size());
+    const std::string progressPercent = std::to_string(100.0 * (m_CurrentCharacterIndex) / m_Characters.size()).substr(0, 4) + "%";
     m_UI.lblProgressNumber->setText(QString::fromStdString(progressNumber));
     m_UI.lblProgressPercent->setText(QString::fromStdString(progressPercent));
 
-    if (m_CurrentCharacterIndex == 350) {
-        QMessageBox::information(nullptr, "Challenge completed!", "You are now the master of character as you have completed the challenge and vastly contributed to the Character Dataset creation. Your Karma points will soar massively! Thank you again and farewell!", QMessageBox::Ok);
+    if (m_CurrentCharacterIndex == m_Characters.size()) {
+        QMessageBox::information(nullptr, "Challenge completed!", "You are now the master of characters as you have completed the challenge and vastly contributed to the Character Dataset creation. Your Karma points will soar massively! Thank you again and farewell!", QMessageBox::Ok);
         this->close();
         return;
     }
 
     // Generation of the new character.
     const int newCharacter = m_Characters.at(m_CurrentCharacterIndex);
-    m_UI.lblCurrentCharacter->setText(QString::fromStdString(std::string(1, newCharacter)));
+    m_UI.lblCurrentCharacter->setText(QString::fromStdWString(std::wstring(1, newCharacter)));
 }
 
 void CharacterDatasetCreator::repeatCharacter() {
